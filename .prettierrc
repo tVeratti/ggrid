@@ -1,0 +1,6 @@
+﻿# .prettierrc 
+jsxBracketSameLine: true
+printWidth: 80
+singleQuote: true
+semi: true
+
