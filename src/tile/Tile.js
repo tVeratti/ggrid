@@ -14,8 +14,8 @@ class Tile extends Component {
   shape = memoize((sides, size) => this.generateSides(sides, size));
 
   calculateSide = (angle, size) => {
-    const rad = angle * (Math.PI / 180);
-    return size * Math.cos(rad);
+    const rad = (90 - angle) * (Math.PI / 180);
+    return size * Math.tan(rad);
   };
 
   generateSides(numSides, size) {

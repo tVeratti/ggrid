@@ -10,6 +10,8 @@ class App extends Component {
       <div>
         <Tile />
         <Tile sides={6} />
+        <Tile sides={8} />
+        <Tile sides={12} />
       </div>
     );
   }
