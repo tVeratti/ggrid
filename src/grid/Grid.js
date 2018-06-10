@@ -13,7 +13,7 @@ class Grid extends Component {
     sides: 4,
     rows: 5,
     columns: 5,
-    size: 75
+    size: 80
   };
 
   state = {

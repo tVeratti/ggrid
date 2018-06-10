@@ -47,6 +47,15 @@ class Tile extends Component {
     this.edgeSize = edge;
     this.distance = distance;
 
+    // Get the offset space between hexagons.
+    let right = size;
+    let left = 0;
+    sides.forEach(s => {
+      right = Math.max(right, s.point.x);
+      left = Math.min(left, s.point.x);
+    });
+    this.svgOffset = Math.abs(right) + Math.abs(left) - size - 2;
+
     return sides;
   }
 
@@ -113,7 +122,8 @@ class Tile extends Component {
 
     const style = {
       width: `${size}px`,
-      height: `${size}px`
+      height: `${size}px`,
+      marginLeft: `-${this.svgOffset}px`
     };
 
     return (

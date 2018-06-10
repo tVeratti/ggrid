@@ -11,9 +11,9 @@
 
 .grid--hex {
   .tile {
-    transform: translateY(25%);
+    transform: translateY(50%);
     &:nth-child(odd) {
-      transform: translateY(-25%);
+      transform: translateY(0);
     }
   }
 }
