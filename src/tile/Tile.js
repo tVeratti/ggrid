@@ -11,32 +11,61 @@ class Tile extends Component {
     size: 100
   };
 
-  shape = memoize((sides, size) => this.generateSides(sides, size));
+  edges = memoize((sides, size) => this.generateSides(sides, size));
+
+  toRad = angle => (90 - angle) * (Math.PI / 180);
 
   calculateSide = (angle, size) => {
-    const rad = (90 - angle) * (Math.PI / 180);
+    const rad = this.toRad(angle);
     return size * Math.tan(rad);
   };
 
   generateSides(numSides, size) {
     const internalAngle = (180 * (numSides - 2)) / numSides;
+    const radius = size / 2;
+    const edge = this.calculateSide(internalAngle / 2, radius) * 2;
 
-    this.radius = size / 2;
-    this.length = this.calculateSide(internalAngle / 2, this.radius) * 2;
+    // Calculate the full distance to a corner point.
+    // (Get hypotenus with pythagorean theorem).
+    const distance = Math.sqrt(Math.pow(edge / 2, 2) + Math.pow(radius, 2));
 
-    console.log(this.length);
-
-    return arr(numSides).map((_, i) => {
+    const sides = arr(numSides).map((_, i) => {
       const angle = (i / numSides) * 360;
-      return { index: i, angle };
+
+      // Calculate the position of a point that will
+      // be used to create a clip-path of the shape.
+      const rad = this.toRad(-angle - internalAngle / (numSides - 2));
+      const point = {
+        x: (radius + Math.cos(rad) * distance).toFixed(2),
+        y: (radius + Math.sin(rad) * distance).toFixed(2)
+      };
+
+      return { index: i, angle, point };
     });
+
+    this.radius = radius;
+    this.edgeSize = edge;
+    this.distance = distance;
+
+    return sides;
   }
 
-  renderSide = side => {
+  getPoints = edges => {
+    const { size } = this.props;
+
+    return edges.map((e, i) => {
+      // Sides are clockwise, starting with the
+      // bottom edge and rotating around.
+      const { point, index } = e;
+      return `${point.x},${point.y}`;
+    });
+  };
+
+  renderEdge = side => {
     const { size, sides } = this.props;
 
     const sideStyle = {
-      width: `${this.length}px`,
+      width: `${this.edgeSize}px`,
       transform: `
         translate(-50%)
         rotate(${side.angle}deg)
@@ -48,24 +77,29 @@ class Tile extends Component {
       <div
         key={`${side.index}-${side.angle}`}
         className="tile__side"
-        style={sideStyle}>
-        <div className="tile__side-face" />
-      </div>
+        style={sideStyle}
+      />
     );
   };
 
   render() {
     const { sides, size } = this.props;
-    const sidesNodes = this.shape(sides, size).map(this.renderSide);
+    const edges = this.edges(sides, size);
+    const edgeNodes = edges.map(this.renderEdge);
 
     const tileStyle = {
       width: `${size}px`,
       height: `${size}px`
     };
 
+    const points = this.getPoints(edges).join(' ');
+
     return (
-      <div className="tile" style={tileStyle}>
-        {sidesNodes}
+      <div className="tile" style={tileStyle} ref={tile => (this.tile = tile)}>
+        <svg className="tile__face" height={size} width={size}>
+          <polygon points={points} />
+        </svg>
+        {edgeNodes}
       </div>
     );
   }
