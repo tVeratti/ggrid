@@ -61,45 +61,74 @@ class Tile extends Component {
     });
   };
 
-  renderEdge = side => {
+  onClick = e => {
+    const { coord, onClick } = this.props;
+    onClick && onClick(coord);
+  };
+
+  renderEdges = edges => {
     const { size, sides } = this.props;
 
-    const sideStyle = {
-      width: `${this.edgeSize}px`,
-      transform: `
-        translate(-50%)
-        rotate(${side.angle}deg)
-        translateY(${this.radius}px)
-      `
-    };
+    const edgeNodes = edges.map(side => {
+      const sideStyle = {
+        width: `${this.edgeSize}px`,
+        transform: `
+          translateX(-50%)
+          rotate(${side.angle}deg)
+          translateY(${this.radius}px)
+        `
+      };
+
+      return (
+        <div
+          key={`${side.index}-${side.angle}`}
+          className="tile__edge"
+          style={sideStyle}
+        />
+      );
+    });
+
+    return <div className="tile__edges">{edgeNodes}</div>;
+  };
+
+  renderSVG = edges => {
+    const { size } = this.props;
+    const points = this.getPoints(edges).join(' ');
 
     return (
-      <div
-        key={`${side.index}-${side.angle}`}
-        className="tile__side"
-        style={sideStyle}
-      />
+      <svg className="tile__face" height={size} width={size}>
+        <polygon points={points} />
+      </svg>
     );
   };
 
   render() {
-    const { sides, size } = this.props;
+    const { sides, size, coord, isActive, isAdjacent } = this.props;
     const edges = this.edges(sides, size);
-    const edgeNodes = edges.map(this.renderEdge);
 
-    const tileStyle = {
+    const className = classnames('tile', {
+      'tile--active': isActive,
+      'tile--adjacent': isAdjacent
+    });
+
+    const style = {
       width: `${size}px`,
       height: `${size}px`
     };
 
-    const points = this.getPoints(edges).join(' ');
-
     return (
-      <div className="tile" style={tileStyle} ref={tile => (this.tile = tile)}>
-        <svg className="tile__face" height={size} width={size}>
-          <polygon points={points} />
-        </svg>
-        {edgeNodes}
+      <div
+        className={className}
+        style={style}
+        ref={tile => (this.tile = tile)}
+        onClick={this.onClick}>
+        {this.renderSVG(edges)}
+        {/* this.renderEdges(edges) */}
+
+        <div className="tile__label">
+          {coord[0]},
+          {coord[1]}
+        </div>
       </div>
     );
   }

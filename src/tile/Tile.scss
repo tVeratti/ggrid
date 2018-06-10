@@ -1,20 +1,62 @@
 @import '../silents';
+@import '../variables';
 
 .tile {
+  display: flex;
+  align-items: center;
   position: relative;
-  border: 1px solid rgba(salmon, 0.3);
+  user-select: none;
+  color: white;
+  cursor: pointer;
+
+  &.tile--adjacent {
+    z-index: 1;
+    .tile__face {
+      fill: $color-C;
+      stroke: $color-D;
+    }
+  }
+
+  &:hover {
+    z-index: 3;
+    
+    .tile__face {
+      fill: $color-G;
+      stroke: $color-H;
+      //transform: scale(1.1);
+    }
+  }
+
+  &.tile--active {
+    z-index: 2;
+    cursor: default;
+
+    .tile__face {
+      fill: $color-D;
+      stroke: $color-E;
+    }
+  }  
 }
 
-.tile__side {
+.tile__edge {
   position: absolute;
-  top: 50%;
   left: 50%;
   right: 0;
   width: 100%;
   height: 1px;
-  background: #aaa;
+}
+
+
+.tile__label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .tile__face {
-  fill: none;
+  fill: $color-FF;
+  stroke: $color-F;
+  stroke-width: 2px;
+  overflow: visible;
+  transition: transform 0.1s ease-in-out;
 }
