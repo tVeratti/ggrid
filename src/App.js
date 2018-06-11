@@ -9,7 +9,6 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Grid sides={4} />
         <Grid sides={6} />
       </div>
     );

@@ -10,15 +10,25 @@ import Tile from '../tile/Tile';
 
 class Grid extends Component {
   static defaultProps = {
-    sides: 4,
     rows: 5,
     columns: 5,
-    size: 80
+    size: 100
   };
 
   state = {
-    activeCoord: []
+    activeCoord: {}
   };
+
+  getCubeCoord(row, col) {
+    const x = col;
+    const z = row - (col + (col%2)) / 2;
+    const y = -x-z;
+    return { x, y, z };
+  }
+
+  getCubeDistance(a, b) { 
+    return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2
+  }
 
   onTileClick = coord => {
     this.setState({ activeCoord: coord });
@@ -29,15 +39,11 @@ class Grid extends Component {
     const { activeCoord } = this.state;
 
     return arr(columns).map((_, col) => {
-      const coord = [col, row]; // [x, y]
+      const coord = this.getCubeCoord(row, col);
+      const distance = this.getCubeDistance(activeCoord, coord);
+
+      const isAdjacent = distance <= 1;
       const isActive = isEqual(activeCoord, coord);
-
-      const distance = {
-        x: Math.abs(activeCoord[0] - coord[0]),
-        y: Math.abs(activeCoord[1] - coord[1])
-      };
-
-      let isAdjacent = distance.x <= 1 && distance.y <= 1;
 
       return (
         <Tile

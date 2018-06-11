@@ -8,66 +8,8 @@ import './Tile.scss';
 class Tile extends Component {
   static defaultProps = {
     sides: 4,
-    size: 100
-  };
-
-  edges = memoize((sides, size) => this.generateSides(sides, size));
-
-  toRad = angle => (90 - angle) * (Math.PI / 180);
-
-  calculateSide = (angle, size) => {
-    const rad = this.toRad(angle);
-    return size * Math.tan(rad);
-  };
-
-  generateSides(numSides, size) {
-    const internalAngle = (180 * (numSides - 2)) / numSides;
-    const radius = size / 2;
-    const edge = this.calculateSide(internalAngle / 2, radius) * 2;
-
-    // Calculate the full distance to a corner point.
-    // (Get hypotenus with pythagorean theorem).
-    const distance = Math.sqrt(Math.pow(edge / 2, 2) + Math.pow(radius, 2));
-
-    const sides = arr(numSides).map((_, i) => {
-      const angle = (i / numSides) * 360;
-
-      // Calculate the position of a point that will
-      // be used to create a clip-path of the shape.
-      const rad = this.toRad(-angle - internalAngle / (numSides - 2));
-      const point = {
-        x: (radius + Math.cos(rad) * distance).toFixed(2),
-        y: (radius + Math.sin(rad) * distance).toFixed(2)
-      };
-
-      return { index: i, angle, point };
-    });
-
-    this.radius = radius;
-    this.edgeSize = edge;
-    this.distance = distance;
-
-    // Get the offset space between hexagons.
-    let right = size;
-    let left = 0;
-    sides.forEach(s => {
-      right = Math.max(right, s.point.x);
-      left = Math.min(left, s.point.x);
-    });
-    this.svgOffset = Math.abs(right) + Math.abs(left) - size - 2;
-
-    return sides;
-  }
-
-  getPoints = edges => {
-    const { size } = this.props;
-
-    return edges.map((e, i) => {
-      // Sides are clockwise, starting with the
-      // bottom edge and rotating around.
-      const { point, index } = e;
-      return `${point.x},${point.y}`;
-    });
+    size: 100,
+    coord: {}
   };
 
   onClick = e => {
@@ -75,45 +17,19 @@ class Tile extends Component {
     onClick && onClick(coord);
   };
 
-  renderEdges = edges => {
-    const { size, sides } = this.props;
-
-    const edgeNodes = edges.map(side => {
-      const sideStyle = {
-        width: `${this.edgeSize}px`,
-        transform: `
-          translateX(-50%)
-          rotate(${side.angle}deg)
-          translateY(${this.radius}px)
-        `
-      };
-
-      return (
-        <div
-          key={`${side.index}-${side.angle}`}
-          className="tile__edge"
-          style={sideStyle}
-        />
-      );
-    });
-
-    return <div className="tile__edges">{edgeNodes}</div>;
-  };
-
-  renderSVG = edges => {
+  renderSVG = () => {
     const { size } = this.props;
-    const points = this.getPoints(edges).join(' ');
+    const viewBox = `-100 -87 200 174`;
 
     return (
-      <svg className="tile__face" height={size} width={size}>
-        <polygon points={points} />
+      <svg className="tile__face" height={size} width={size} viewBox={viewBox}>
+        <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" />
       </svg>
     );
   };
 
   render() {
     const { sides, size, coord, isActive, isAdjacent } = this.props;
-    const edges = this.edges(sides, size);
 
     const className = classnames('tile', {
       'tile--active': isActive,
@@ -122,8 +38,7 @@ class Tile extends Component {
 
     const style = {
       width: `${size}px`,
-      height: `${size}px`,
-      marginLeft: `-${this.svgOffset}px`
+      height: `${size}px`
     };
 
     return (
@@ -132,12 +47,12 @@ class Tile extends Component {
         style={style}
         ref={tile => (this.tile = tile)}
         onClick={this.onClick}>
-        {this.renderSVG(edges)}
+        {this.renderSVG()}
         {/* this.renderEdges(edges) */}
 
         <div className="tile__label">
-          {coord[0]},
-          {coord[1]}
+          {coord.x},{coord.y},{coord.z}
+          
         </div>
       </div>
     );
