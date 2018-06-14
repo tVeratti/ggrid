@@ -10,9 +10,10 @@ import Tile from '../tile/Tile';
 
 class Grid extends Component {
   static defaultProps = {
-    rows: 5,
-    columns: 5,
-    size: 100
+    rows: 10,
+    columns: 10,
+    size: 75,
+    range: 1
   };
 
   state = {
@@ -21,13 +22,15 @@ class Grid extends Component {
 
   getCubeCoord(row, col) {
     const x = col;
-    const z = row - (col + (col%2)) / 2;
-    const y = -x-z;
+    const z = row - (col + (col % 2)) / 2;
+    const y = -x - z;
     return { x, y, z };
   }
 
-  getCubeDistance(a, b) { 
-    return (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2
+  getCubeDistance(a, b) {
+    return (
+      (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) + Math.abs(a.z - b.z)) / 2
+    );
   }
 
   onTileClick = coord => {
@@ -35,14 +38,14 @@ class Grid extends Component {
   };
 
   renderTiles = row => {
-    const { columns, size, sides } = this.props;
+    const { columns, size, sides, range } = this.props;
     const { activeCoord } = this.state;
 
     return arr(columns).map((_, col) => {
       const coord = this.getCubeCoord(row, col);
       const distance = this.getCubeDistance(activeCoord, coord);
 
-      const isAdjacent = distance <= 1;
+      const isAdjacent = distance <= range;
       const isActive = isEqual(activeCoord, coord);
 
       return (
@@ -74,7 +77,11 @@ class Grid extends Component {
       );
     });
 
-    return <div className={gridClassNames}>{tiles}</div>;
+    return (
+      <div className={gridClassNames}>
+        <div className="grid__tiles">{tiles}</div>
+      </div>
+    );
   }
 }
 

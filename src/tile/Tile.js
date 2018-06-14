@@ -20,9 +20,14 @@ class Tile extends Component {
   renderSVG = () => {
     const { size } = this.props;
     const viewBox = `-100 -87 200 174`;
+    const height = size * 0.87;
 
     return (
-      <svg className="tile__face" height={size} width={size} viewBox={viewBox}>
+      <svg
+        className="tile__face"
+        height={height}
+        width={size}
+        viewBox={viewBox}>
         <polygon points="100,0 50,-87 -50,-87 -100,-0 -50,87 50,87" />
       </svg>
     );
@@ -36,9 +41,11 @@ class Tile extends Component {
       'tile--adjacent': isAdjacent
     });
 
+    const isSmall = size < 86;
     const style = {
       width: `${size}px`,
-      height: `${size}px`
+      height: `${size * 0.86}px`,
+      marginLeft: `-${Math.ceil(size / 4)}px`
     };
 
     return (
@@ -49,11 +56,7 @@ class Tile extends Component {
         onClick={this.onClick}>
         {this.renderSVG()}
         {/* this.renderEdges(edges) */}
-
-        <div className="tile__label">
-          {coord.x},{coord.y},{coord.z}
-          
-        </div>
+        <div className="tile__label" />
       </div>
     );
   }

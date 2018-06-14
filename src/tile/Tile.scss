@@ -12,8 +12,8 @@
   &.tile--adjacent {
     z-index: 1;
     .tile__face {
-      fill: $color-C;
-      stroke: $color-D;
+      fill: rgba(white, .1);
+      //stroke: $color-E;
     }
   }
 
@@ -21,8 +21,8 @@
     z-index: 3;
     
     .tile__face {
-      fill: $color-G;
-      stroke: $color-H;
+      fill: rgba(white, .1);
+      //stroke: white;
       //transform: scale(1.1);
     }
   }
@@ -32,10 +32,16 @@
     cursor: default;
 
     .tile__face {
-      fill: $color-D;
-      stroke: $color-E;
+      fill: transparent;
+      stroke: white;
     }
-  }  
+  }
+  
+  &:active {
+    .tile__face {
+      transform: scale(1.1);
+    }
+  }
 }
 
 .tile__edge {
@@ -54,9 +60,9 @@
 }
 
 .tile__face {
-  fill: $color-FF;
-  stroke: $color-F;
-  stroke-width: 2px;
+  fill: transparent;
+  stroke: rgba(white, 0.1);
+  stroke-width: 4px;
   overflow: visible;
   transition: transform 0.1s ease-in-out;
 }

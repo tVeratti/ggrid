@@ -1,12 +1,21 @@
+@import '../variables';
+
 .grid {
-  padding: 20px;
+  display: inline-block;
+  padding: 20px 20px 50px 40px;
+  //perspective: 1000px;
+  //perspective-origin: center left;
+  background: $color-FF;
+  border-radius: 5px;
+  background: linear-gradient(to bottom, #44a08d, #093637);
+}
+
+.grid__tiles {
+  //transform: rotateX(40deg);
 }
 
 .grid__row {
   display: flex;
-  &:nth-child(odd) {
-    background: #eee;
-  }
 }
 
 .grid--hex {
